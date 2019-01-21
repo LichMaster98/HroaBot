@@ -1,19 +1,14 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Globalization;
+using System;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using JsonFlatFileDataStore;
-using Newtonsoft.Json;
-using trillbot.Classes;
+using System.Linq;
+using hroabot.Classes;
 
 namespace hroabot.Classes {
 
@@ -28,20 +23,23 @@ namespace hroabot.Classes {
         public ulong author { get; set;}
 
         [JsonProperty ("description")]
-        public string description { get; set; }
+        public string descr { get; set; }
 
         [JsonProperty ("img")]
         public string img { get; set; } = "";
+        [JsonProperty("rgb")]
+        public int[] rgb { get; set; } = { 255, 255, 255};
 
-        public Embed toEmbed() {
+        public Embed toEmbed(SocketGuild Guild) {
             var embed = new EmbedBuilder();
 
             embed.Title = title;
             if (img != "") {
-                embed.WithThumbnailUrl(img);
+                embed.WithImageUrl(img);
             }
-            embed.AddField("Description", description, true);
-            //embed.AddField("Author", );
+            embed.AddField("Description", descr, true);
+            embed.AddField("Author", Guild.GetUser(author).Mention);
+            embed.WithColor(rgb[0], rgb[1], rgb[2]);
             embed.Build();
 
             return embed.Build();
@@ -115,4 +113,20 @@ namespace hroabot.Classes {
         }
     }
 
+    public static class Serialize
+    {
+        public static string ToJson(this description[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
+    }
+
+    internal static class Converter
+    {
+        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        {
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            DateParseHandling = DateParseHandling.None,
+            Converters = {
+                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            },
+        };
+    }
 }
