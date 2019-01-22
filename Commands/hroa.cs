@@ -19,7 +19,7 @@ namespace hroabot.Commands
     public class DescCommands : ModuleBase<SocketCommandContext>
     {
         [Command("add")]
-        public async Task addDesc(params string[] inputs ) {
+        public async Task addDesc(params string[] inputs) {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
                 description desc = description.get_description(inputs[0]);
                 if (desc != null) {
@@ -112,9 +112,29 @@ namespace hroabot.Commands
         }
 
         [Command("help")]
-        public async Task helpAsync()
+        public async Task helpAsync(params string[] inputs)
         {
-            //await Context.User.SendMessageAsync("Please check out this google document for my commands: <https://docs.google.com/document/d/1pWfIToswRCDVpqTK1Bj5Uv6s-n7zpOaqgZHQjW3SNzU/edit?usp=sharing>");
+            if (inputs.Length == 0) {
+                await Context.User.SendMessageAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```md " + System.Environment.NewLine + "* desc" + System.Environment.NewLine + "* color" + System.Environment.NewLine + "* delete" + System.Environment.NewLine + "* img" + System.Environment.NewLine + "* add```");
+            } else {
+                switch(inputs[0].ToLower()) {
+                case "desc":
+                    await Context.User.SendMessageAsync("Usage: `hs!desc [Location]` | Gives the description in a embed of the given location. Fails silently if the location doesn't exist.");
+                break;
+                case "color":
+                    await Context.User.SendMessageAsync("**Requires Admin** | Usage: `hs!color [Location] [0-255] [0-255] [0-255]` | Sets the embed color of the given location in red, blue, green 0-255 values.");
+                break;
+                case "delete":
+                    await Context.User.SendMessageAsync("**Requires Admin** | Usage: `hs!delete [Location]` | Removes the location from the database.");
+                break;
+                case "img":
+                    await Context.User.SendMessageAsync("**Requires Admin** | Usage: `hs!img [Location] [Img Link]` | Adds the img link to the given location.");
+                break;
+                case "add":
+                    await Context.User.SendMessageAsync("**Requires Admin** | Usage: `hs!add [Location] [Multi Word Description] `| If the location doesn't exist a new location is added. If the location exists the text is appended to the end.");
+                break;
+                }
+            }
         }
 
         [Command("lootcrate")]
