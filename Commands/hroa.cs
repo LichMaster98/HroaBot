@@ -25,7 +25,7 @@ namespace hroabot.Commands
                 if (desc != null) {
                     List<string> str = inputs.ToList();
                     str.RemoveAt(0);
-                    desc.descr += String.Join(" ", str);
+                    desc.descr += " " + String.Join(" ", str);
                     description.update_description(desc);
                 } else {
                     desc = new description();
@@ -101,6 +101,22 @@ namespace hroabot.Commands
             }
         }
 
+        [Command("wiki")]
+        public async Task wikiDesc(string name, string wiki) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.wikiLink = wiki;
+                    description.update_description(desc);
+                    await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of '" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
         [Command("desc")]
         public async Task showDesc(string name) {
             description desc = description.get_description(name);
@@ -111,15 +127,45 @@ namespace hroabot.Commands
                 }
         }
 
+        [Command("list")]
+        public async Task showList() {
+            List<description> descs = description.get_description();
+            List<string> str = new List<string>();
+            int count = 8;
+            str.Add("```");
+            foreach(description d in descs) {
+                string toAdd = d.title;
+                if (d.descr.Length > 50 ) {
+                    toAdd += " - " + d.descr.Substring(0,49) + "...";
+                } else {
+                    toAdd += " - " + d.descr;
+                }
+                count += toAdd.Length + 1;
+                if ( count >= 2000) { // Handling output condition of 2000 max characters
+                    str.Add("```");
+                    await ReplyAsync(String.Join(System.Environment.NewLine,str));
+                    str = new List<string>();
+                    str.Add("```");
+                    count = 9 + toAdd.Length;
+                }
+                str.Add(toAdd);
+            }
+            str.Add("```");
+            await ReplyAsync(String.Join(System.Environment.NewLine,str));
+        }
+
         [Command("help")]
         public async Task helpAsync(params string[] inputs)
         {
             if (inputs.Length == 0) {
-                await ReplyAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```desc" + System.Environment.NewLine + "color" + System.Environment.NewLine + "delete" + System.Environment.NewLine + "img" + System.Environment.NewLine + "add```");
+                await ReplyAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```desc , list , color , delete , img , wiki , add```");
             } else {
                 switch(inputs[0].ToLower()) {
                 case "desc":
                     await ReplyAsync("Usage: `hs!desc [Location]` | Gives the description in a embed of the given location. Fails silently if the location doesn't exist.");
+                break;
+                case "list":
+                    await ReplyAsync("Usage: `hs!list` | Gives a list of all available locations along with the first 50 characters of the description.");
                 break;
                 case "color":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!color [Location] [0-255] [0-255] [0-255]` | Sets the embed color of the given location in red, blue, green 0-255 values.");
@@ -132,6 +178,9 @@ namespace hroabot.Commands
                 break;
                 case "add":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!add [Location] [Multi Word Description] `| If the location doesn't exist a new location is added. If the location exists the text is appended to the end.");
+                break;
+                case "wiki":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!wiki [Location] [wikiLink] `| Adds a wiki link to the title field of the embed");
                 break;
                 }
             }

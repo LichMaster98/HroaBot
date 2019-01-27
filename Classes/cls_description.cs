@@ -27,21 +27,47 @@ namespace hroabot.Classes {
 
         [JsonProperty ("img")]
         public string img { get; set; } = "";
+
         [JsonProperty("rgb")]
         public int[] rgb { get; set; } = { 255, 255, 255};
+
+        [JsonProperty("wiki")]
+        public string wikiLink { get; set; }
 
         public Embed toEmbed(SocketGuild Guild) {
             var embed = new EmbedBuilder();
 
             embed.Title = title;
+            if (wikiLink != null) {
+                embed.WithUrl(wikiLink);
+            }
+            embed.WithAuthor(Guild.GetUser(536703203736289360));
             if (img != "") {
                 embed.WithImageUrl(img);
             }
-            embed.AddField("Description", descr, true);
-            embed.AddField("Author", Guild.GetUser(author).Mention);
+            if ( descr.Length > 2048 ) {
+                string temp = descr;
+                int end = 2048;
+                while (temp[end].CompareTo(' ') != 0) {
+                    end--;
+                }
+                embed.WithDescription(descr.Substring(0,end));
+                temp = descr.Substring(end);
+                while (temp.Length > 1024) {
+                    end = 1024;
+                    while (temp[end].CompareTo(' ') != 0) {
+                        end--;
+                    }
+                    embed.AddField(" ", temp.Substring(0,end));
+                    temp = temp.Substring(end);
+                }
+                embed.AddField(" ", temp);
+            } else {
+                embed.WithDescription(descr);
+            }
+            //embed.AddField("Author", Guild.GetUser(author).Mention);
             embed.WithColor(rgb[0], rgb[1], rgb[2]);
             embed.Build();
-
             return embed.Build();
         }
 
