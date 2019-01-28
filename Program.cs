@@ -57,7 +57,7 @@ namespace hroabot
         public async Task RegisterCommandAsync()
         {
             _client.MessageReceived += HandleCommandAsync;
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
         }
 
@@ -69,12 +69,6 @@ namespace hroabot
             if (message is null || message.Author.IsBot)
             {
                 return;
-            }
-
-            if (message.Content.Contains('“') || message.Content.Contains('”'))
-            {
-                var msg = message.Content.Replace('“', '"').Replace('”', '"');
-                await message.ModifyAsync(e => e.Content = msg);
             }
 
             var msg_prefix = message.Content.ToString().Substring(0, 3);

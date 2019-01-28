@@ -25,7 +25,7 @@ namespace hroabot.Commands
                 if (desc != null) {
                     List<string> str = inputs.ToList();
                     str.RemoveAt(0);
-                    desc.descr += " " + String.Join(" ", str);
+                    desc.descr += System.Environment.NewLine + System.Environment.NewLine + String.Join(" ", str);
                     description.update_description(desc);
                 } else {
                     desc = new description();
@@ -177,7 +177,7 @@ namespace hroabot.Commands
                     await ReplyAsync("**Requires Admin** | Usage: `hs!img [Location] [Img Link]` | Adds the img link to the given location.");
                 break;
                 case "add":
-                    await ReplyAsync("**Requires Admin** | Usage: `hs!add [Location] [Multi Word Description] `| If the location doesn't exist a new location is added. If the location exists the text is appended to the end.");
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!add [Location] [Multi Word Description] `| If the location doesn't exist a new location is added. If the location exists the text is appended to the end after adding 2 line breaks");
                 break;
                 case "wiki":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!wiki [Location] [wikiLink] `| Adds a wiki link to the title field of the embed");
