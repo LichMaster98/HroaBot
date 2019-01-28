@@ -158,7 +158,7 @@ namespace hroabot.Commands
         public async Task helpAsync(params string[] inputs)
         {
             if (inputs.Length == 0) {
-                await ReplyAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```desc , list , color , delete , img , wiki , add```");
+                await ReplyAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```desc, list, color, delete, img, wiki, add```");
             } else {
                 switch(inputs[0].ToLower()) {
                 case "desc":
