@@ -23,6 +23,10 @@ namespace hroabot.Commands
         [Command("add")]
         public async Task addDesc(params string[] inputs) {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                if (inputs.Length < 2) {
+                    await ReplyAsync("Not enough inputs");
+                    return;
+                }
                 description desc = description.get_description(inputs[0]);
                 if (desc != null) {
                     List<string> str = inputs.ToList();
@@ -58,6 +62,10 @@ namespace hroabot.Commands
         [Command("edit")]
         public async Task doEdit(params string[] inputs) {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                if (inputs.Length < 2) {
+                    await ReplyAsync("Not enough inputs");
+                    return;
+                }
                 description desc = description.get_description(inputs[0]);
                 if (desc != null) {
                     desc.descr = "";
@@ -156,6 +164,38 @@ namespace hroabot.Commands
             }
         }
 
+        /** @todo Overload this function to accept HEX values
+          *
+        [Command("color")]
+        public async Task colorDesc(string name, int red, int green, int blue) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    if ( 0 > red || red > 255 ) {
+                        await ReplyAsync(Context.User.Mention + ", the red paramater needs to be between 0 and 255.");
+                        return;
+                    } else if (0 > green || green > 255 ) {
+                        await ReplyAsync(Context.User.Mention + ", the green paramater needs to be between 0 and 255.");
+                        return;
+                    } else if (0 > blue || blue > 255 ) {
+                        await ReplyAsync(Context.User.Mention + ", the blue paramater needs to be between 0 and 255.");
+                        return;
+                    }
+                    desc.rgb[0] = red;
+                    desc.rgb[1] = green;
+                    desc.rgb[2] = blue;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Color changed on the description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of '" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+        // */
+
         [Command("wiki")]
         public async Task wikiDesc(string name, string wiki) {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
@@ -225,11 +265,17 @@ namespace hroabot.Commands
         }
 
         [Command("footer")]
-        public async Task addfooter(string name, string footer) {
+        public async Task addfooter(params string[] inputs) {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
-                description desc = description.get_description(name);
+                if (inputs.Length < 2) {
+                    await ReplyAsync("Not enough inputs");
+                    return;
+                }
+                description desc = description.get_description(inputs[0]);
                 if (desc != null) {
-                    desc.footer = footer;
+                    str.RemoveAt(0);
+                    List<string> str = inputs.ToList();
+                    desc.footer = String.Join(" ", inputs);
                     description.update_description(desc);
                     if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
                     else await Context.Channel.SendMessageAsync("Footer information updated on description");
