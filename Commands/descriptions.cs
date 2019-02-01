@@ -258,6 +258,23 @@ namespace hroabot.Commands
             }
         }
 
+        [Command("audioToggle")]
+        public async Task addAudio(string name) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.audio = !desc.audio;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Audio information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
         [Command("preview")]
         public async Task togglePreview() {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
@@ -267,8 +284,6 @@ namespace hroabot.Commands
                 //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
             }
         }
-
-
 
         [Command("desc")]
         public async Task showDesc(string name) {

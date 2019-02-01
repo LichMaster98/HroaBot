@@ -31,6 +31,11 @@ namespace hroabot.Commands
                 case "list":
                     await ReplyAsync("Usage: `hs!list` | Gives a list of all available locations along with the first 50 characters of the description.");
                 break;
+                /*
+                case "audio":
+                    await ReplyAsync("Usage: `hs!audio [Location]` | Joins the VC of the user and plays the audio for a given location.");
+                break; 
+                // */
                 case "color":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!color [Location] [0-255] [0-255] [0-255]` | Sets the embed color of the given location in red, blue, green 0-255 values.");
                 break;
@@ -69,6 +74,9 @@ namespace hroabot.Commands
                 break;
                 case "preview":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!preview` | Toggles the preview mode");
+                break;
+                case "audiotoggle":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!audioToggle` | Toggles the audio availability");
                 break;
                 }
             }

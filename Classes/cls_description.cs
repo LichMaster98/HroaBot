@@ -49,6 +49,9 @@ namespace hroabot.Classes {
         [JsonProperty("footerImg")]
         public string footerImg { get; set; } = "";
 
+        [JsonProperty("audio")]
+        public Boolean audio { get; set; } = false;
+
         public Embed toEmbed(SocketGuild Guild) {
             var embed = new EmbedBuilder();
 
@@ -81,6 +84,7 @@ namespace hroabot.Classes {
             } else {
                 embed.WithDescription(descr);
             }
+            if (audio) embed.AddField("Audio", "Audio Available. Type `hs!audio " + this.title + "` to play.");
             embed.WithCurrentTimestamp();
             embed.WithColor(rgb[0], rgb[1], rgb[2]);
             embed.WithFooter(footer, footerImg);
