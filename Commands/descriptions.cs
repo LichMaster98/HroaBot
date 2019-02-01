@@ -271,10 +271,11 @@ namespace hroabot.Commands
                     await ReplyAsync("Not enough inputs");
                     return;
                 }
+                string name = inputs[0];
                 description desc = description.get_description(inputs[0]);
                 if (desc != null) {
-                    str.RemoveAt(0);
                     List<string> str = inputs.ToList();
+                    str.RemoveAt(0);
                     desc.footer = String.Join(" ", inputs);
                     description.update_description(desc);
                     if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));

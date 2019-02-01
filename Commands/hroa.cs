@@ -67,7 +67,7 @@ namespace hroabot.Commands
                     await ReplyAsync("**Requires Admin** | Usage: `hs!authorUrl [Location] [link]` | Adds or replaces the author url destination. Please provide a URL");
                 break;
                 case "footer":
-                    await ReplyAsync("**Requires Admin** | Usage: `hs!footer [Location] \"Footer in Multiwords\"` | Adds a footer message to the description");
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!footer [Location] [Footer in Multiwords]` | Adds a footer message to the description");
                 break;
                 case "footerimg":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!footerimg [Location] [link]` | Adds or replaces the footer img. Please provide a URL");
