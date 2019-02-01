@@ -18,25 +18,61 @@ namespace hroabot.Commands
 {
     public class DescCommands : ModuleBase<SocketCommandContext>
     {
+        static Boolean showPreview = true;
+
         [Command("add")]
         public async Task addDesc(params string[] inputs) {
             if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
                 description desc = description.get_description(inputs[0]);
                 if (desc != null) {
                     List<string> str = inputs.ToList();
-                    str.RemoveAt(0);
-                    desc.descr += System.Environment.NewLine + System.Environment.NewLine + String.Join(" ", str);
+                    foreach (string s in str) {
+                        if (s.Equals("[b]")) {
+                            desc.descr += System.Environment.NewLine;
+                        } else {
+                            desc.descr += s + " ";
+                        }
+                    }
                     description.update_description(desc);
                 } else {
                     desc = new description();
                     desc.title = inputs[0];
-                    desc.author = Context.User.Id;
                     List<string> str = inputs.ToList();
                     str.RemoveAt(0);
-                    desc.descr = String.Join(" ", str);
+                    foreach (string s in str) {
+                        if (s.Equals("[b]")) {
+                            desc.descr += System.Environment.NewLine;
+                        } else {
+                            desc.descr += s + " ";
+                        }
+                    }
                     description.insert_description(desc);
                 }
-                await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                if (showPreview) { await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild)); }
+                else await Context.Channel.SendMessageAsync("Description either updated or created.");
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("edit")]
+        public async Task doEdit(params string[] inputs) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(inputs[0]);
+                if (desc != null) {
+                    desc.descr = "";
+                    List<string> str = inputs.ToList();
+                    foreach (string s in str) {
+                        if (s.Equals("[b]")) {
+                            desc.descr += System.Environment.NewLine;
+                        } else {
+                            desc.descr += s + " ";
+                        }
+                    }
+                    description.update_description(desc);
+                }
+                if (showPreview) { await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild)); }
+                else await Context.Channel.SendMessageAsync("Description either updated or created.");
             } else {
                 //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
             }
@@ -49,7 +85,25 @@ namespace hroabot.Commands
                 if (desc != null) {
                     desc.img = link;
                     description.update_description(desc);
-                    await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Image added to description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", you have to `hs!add 'location' 'Multi word description'` before adding an image link to it.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("thumbnail")]
+        public async Task addThumbnail(string name, string link) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.thumbnail = link;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Image added to description");
                 } else {
                     await ReplyAsync(Context.User.Mention + ", you have to `hs!add 'location' 'Multi word description'` before adding an image link to it.");
                 }
@@ -92,7 +146,8 @@ namespace hroabot.Commands
                     desc.rgb[1] = green;
                     desc.rgb[2] = blue;
                     description.update_description(desc);
-                    await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Color changed on the description");
                 } else {
                     await ReplyAsync(Context.User.Mention + ", a description under the title of '" + name +"` does not exist.");
                 }
@@ -108,7 +163,8 @@ namespace hroabot.Commands
                 if (desc != null) {
                     desc.wikiLink = wiki;
                     description.update_description(desc);
-                    await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Wiki link added to description");
                 } else {
                     await ReplyAsync(Context.User.Mention + ", a description under the title of '" + name +"` does not exist.");
                 }
@@ -116,6 +172,103 @@ namespace hroabot.Commands
                 //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
             }
         }
+
+        [Command("author")]
+        public async Task addAuthor(string name, string author) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.author = author;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Author information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("authImg")]
+        public async Task addAuthImg(string name, string authImg) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.authImg = authImg;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Author Img information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("authUrl")]
+        public async Task addAuthUrl(string name, string authUrl) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.authUrl = authUrl;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Author Url information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("footer")]
+        public async Task addfooter(string name, string footer) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.footer = footer;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Footer information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("footerImg")]
+        public async Task addfooterImg(string name, string footerImg) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.footerImg = footerImg;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Footer Img information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("preview")]
+        public async Task togglePreview() {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                showPreview = !showPreview;
+                await Context.Channel.SendMessageAsync("Preview toggled to: " + showPreview);
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+
 
         [Command("desc")]
         public async Task showDesc(string name) {
@@ -136,7 +289,7 @@ namespace hroabot.Commands
             foreach(description d in descs) {
                 string toAdd = d.title;
                 if (d.descr.Length > 50 ) {
-                    toAdd += " - " + d.descr.Substring(0,49) + "...";
+                    toAdd += " - " + d.descr.Substring(0,47) + "...";
                 } else {
                     toAdd += " - " + d.descr;
                 }
@@ -158,7 +311,7 @@ namespace hroabot.Commands
         public async Task helpAsync(params string[] inputs)
         {
             if (inputs.Length == 0) {
-                await ReplyAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```desc, list, color, delete, img, wiki, add```");
+                await ReplyAsync("Hi! I'm the " + Context.Client.CurrentUser.Username + " for more information use one of the following phrases after the help command: ```desc, list, edit, thumbnail, author, authImg, authUrl, footer, footerImg, preview, color, delete, img, wiki, add```");
             } else {
                 switch(inputs[0].ToLower()) {
                 case "desc":
@@ -177,10 +330,34 @@ namespace hroabot.Commands
                     await ReplyAsync("**Requires Admin** | Usage: `hs!img [Location] [Img Link]` | Adds the img link to the given location.");
                 break;
                 case "add":
-                    await ReplyAsync("**Requires Admin** | Usage: `hs!add [Location] [Multi Word Description] `| If the location doesn't exist a new location is added. If the location exists the text is appended to the end after adding 2 line breaks");
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!add [Location] [Multi Word Description]` | If the location doesn't exist a new location is added. If the location exists the text is appended to the end after adding 2 line breaks");
                 break;
                 case "wiki":
-                    await ReplyAsync("**Requires Admin** | Usage: `hs!wiki [Location] [wikiLink] `| Adds a wiki link to the title field of the embed");
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!wiki [Location] [wikiLink]` | Adds a wiki link to the title field of the embed");
+                break;
+                case "edit":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!edit [Location] [Multi Word Description]` | Replaces the description text of given location");
+                break;
+                case "thumbnail":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!thumbnail [Location] [link]` | Adds or replaces the thumbnail img. Please provide a URL");
+                break;
+                case "author":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!edit [Location] \"Author Name\"` | Set the Author name");
+                break;
+                case "authorimg":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!authorImg [Location] [link]` | Adds or replaces the author img. Please provide a URL");
+                break;
+                case "authorurl":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!authorUrl [Location] [link]` | Adds or replaces the author url destination. Please provide a URL");
+                break;
+                case "footer":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!footer [Location] \"Footer in Multiwords\"` | Adds a footer message to the description");
+                break;
+                case "footerimg":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!footerimg [Location] [link]` | Adds or replaces the footer img. Please provide a URL");
+                break;
+                case "preview":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!preview` | Toggles the preview mode");
                 break;
                 }
             }

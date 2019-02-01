@@ -20,13 +20,22 @@ namespace hroabot.Classes {
         public string title { get; set; }
 
         [JsonProperty ("author")]
-        public ulong author { get; set;}
+        public string author { get; set; } = "Hroan Tourism Hub";
+
+        [JsonProperty("authorImg")]
+        public string authImg { get; set; } = "https://vignette.wikia.nocookie.net/far-verona/images/0/0c/MinistraTran.png/revision/latest/scale-to-width-down/240?cb=20181006144229";
+
+        [JsonProperty("authorURL")]
+        public string authUrl { get; set; } = "";
 
         [JsonProperty ("description")]
         public string descr { get; set; }
 
         [JsonProperty ("img")]
-        public string img { get; set; } = "";
+        public string img { get; set; }
+
+        [JsonProperty("thumbnail")]
+        public string thumbnail { get; set; }
 
         [JsonProperty("rgb")]
         public int[] rgb { get; set; } = { 255, 255, 255};
@@ -34,17 +43,24 @@ namespace hroabot.Classes {
         [JsonProperty("wiki")]
         public string wikiLink { get; set; }
 
+        [JsonProperty("footer")]
+        public string footer { get; set; } = "";
+
+        [JsonProperty("footerImg")]
+        public string footerImg { get; set; } = "";
+
         public Embed toEmbed(SocketGuild Guild) {
             var embed = new EmbedBuilder();
 
             embed.Title = title;
-            if (wikiLink != null) {
-                embed.WithUrl(wikiLink);
-            }
-            embed.WithAuthor(Guild.GetUser(536703203736289360));
-            if (img != "") {
-                embed.WithImageUrl(img);
-            }
+            if (wikiLink != null) embed.WithUrl(wikiLink);
+
+            embed.WithAuthor(author, authImg, authUrl);
+
+            if (img != null) embed.WithImageUrl(img);
+
+            if (thumbnail != null) embed.WithThumbnailUrl(thumbnail);
+
             if ( descr.Length > 2048 ) {
                 string temp = descr;
                 int end = 2048;
@@ -61,13 +77,13 @@ namespace hroabot.Classes {
                     embed.AddField(" ", temp.Substring(0,end));
                     temp = temp.Substring(end);
                 }
-                embed.AddField(" ", temp);
+                embed.AddField("Description Continued", temp);
             } else {
                 embed.WithDescription(descr);
             }
-            //embed.AddField("Author", Guild.GetUser(author).Mention);
+            embed.WithCurrentTimestamp();
             embed.WithColor(rgb[0], rgb[1], rgb[2]);
-            embed.Build();
+            embed.WithFooter(footer, footerImg);
             return embed.Build();
         }
 
