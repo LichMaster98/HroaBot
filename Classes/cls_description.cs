@@ -18,6 +18,9 @@ namespace hroabot.Classes {
         [JsonProperty ("title")]
         public string title { get; set; }
 
+        [JsonProperty("displayTitle")]
+        public string displayTitle { get; set; } = "";
+
         [JsonProperty ("author")]
         public string author { get; set; } = "Hroan Tourism Hub";
 
@@ -54,7 +57,11 @@ namespace hroabot.Classes {
         public Embed toEmbed(SocketGuild Guild) {
             var embed = new EmbedBuilder();
 
-            embed.Title = title;
+            if (displayTitle != "") {
+                embed.Title = displayTitle;
+            } else {
+                embed.Title = title;
+            }
             if (wikiLink != null) embed.WithUrl(wikiLink);
 
             embed.WithAuthor(author, authImg, authUrl);

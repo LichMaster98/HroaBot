@@ -70,6 +70,7 @@ namespace hroabot.Commands
                 if (desc != null) {
                     desc.descr = "";
                     List<string> str = inputs.ToList();
+                    str.RemoveAt(0);
                     foreach (string s in str) {
                         if (s.Equals("[b]")) {
                             desc.descr += System.Environment.NewLine;
@@ -314,6 +315,23 @@ namespace hroabot.Commands
                     description.update_description(desc);
                     if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
                     else await Context.Channel.SendMessageAsync("Audio information updated on description");
+                } else {
+                    await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
+                }
+            } else {
+                //ReplyAsync(Context.User.Mention + ", you don't have access to add a description");
+            }
+        }
+
+        [Command("setTitle")]
+        public async Task setDisplayTitle(string name, string disTitle) {
+            if (description.isDescriptionManager(Context.Guild.GetUser(Context.User.Id))) {
+                description desc = description.get_description(name);
+                if (desc != null) {
+                    desc.displayTitle = disTitle;
+                    description.update_description(desc);
+                    if (showPreview) await Context.Channel.SendMessageAsync("Here is the description you made: ", false, desc.toEmbed(Context.Guild));
+                    else await Context.Channel.SendMessageAsync("Display Title updated on description");
                 } else {
                     await ReplyAsync(Context.User.Mention + ", a description under the title of `" + name +"` does not exist.");
                 }

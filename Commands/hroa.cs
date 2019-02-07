@@ -78,6 +78,9 @@ namespace hroabot.Commands
                 case "audiotoggle":
                     await ReplyAsync("**Requires Admin** | Usage: `hs!audioToggle` | Toggles the audio availability");
                 break;
+                case "settitle":
+                    await ReplyAsync("**Requires Admin** | Usage: `hs!setTitle [Location] [\"Display Title\"]` | Sets the display title of the embed");
+                break;
                 }
             }
         }
