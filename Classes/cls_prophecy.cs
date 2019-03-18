@@ -21,18 +21,34 @@ namespace hroabot.Classes
         {
             if (int.TryParse(stringId, out int id))
             {
-                var store = new DataStore("prophecy.json");
-
-                prophecy toReturn = store.GetCollection<prophecy>().AsQueryable().FirstOrDefault(e => e.ID == id);
-
-                store.Dispose();
-
-                return toReturn;
+                return get_prophecy(id);
             }
             else
             {
                 return null;
             }
+        }
+
+        public static prophecy get_prophecy(int id)
+        {
+            var store = new DataStore("prophecy.json");
+
+            prophecy toReturn = store.GetCollection<prophecy>().AsQueryable().FirstOrDefault(e => e.ID == id);
+
+            store.Dispose();
+
+            return toReturn;
+        }
+
+        public static List<prophecy> get_all_prophecies()
+        {
+            var store = new DataStore("prophecy.json");
+
+            List<prophecy> toReturn = new List<prophecy>(store.GetCollection<prophecy>().AsQueryable());
+
+            store.Dispose();
+
+            return toReturn;
         }
 
         public static void add_prophecy(prophecy prop)
@@ -42,6 +58,14 @@ namespace hroabot.Classes
             // Get employee collection
             store.GetCollection<prophecy>().InsertOneAsync(prop);
 
+            store.Dispose();
+        }
+
+        public static void delete_prophecy(prophecy prop)
+        {
+            var store = new DataStore("prophecy.json");
+
+            store.GetCollection<prophecy>().DeleteOne(e => e.ID == prop.ID);
             store.Dispose();
         }
     }
