@@ -42,11 +42,28 @@ namespace hroabot.Classes
             return toReturn;
         }
 
+        public static List<speaker> get_all_speakers()
+        {
+            var store = new DataStore("speaker.json");
+
+            List<speaker> toReturn = new List<speaker>(store.GetCollection<speaker>().AsQueryable());
+            store.Dispose();
+            return toReturn;
+        }
+
         public static void update_speaker(speaker speaker)
         {
             var store = new DataStore("speaker.json");
 
             store.GetCollection<speaker>().ReplaceOneAsync(e => e.ID == speaker.ID, speaker);
+            store.Dispose();
+        }
+
+        public static void delete_speaker(speaker speaker)
+        {
+            var store = new DataStore("speaker.json");
+
+            store.GetCollection<speaker>().DeleteOne(e => e.ID == speaker.ID);
             store.Dispose();
         }
     }
